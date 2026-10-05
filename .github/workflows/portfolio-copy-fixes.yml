@@ -1,0 +1,40 @@
+name: Apply hiring readiness copy fixes
+on:
+  push:
+    paths:
+      - '.github/workflows/portfolio-copy-fixes.yml'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile,re
+          target=Path('Kayaswanna_Portfolio_GitHubLite.zip')
+          with zipfile.ZipFile(target) as z:files={n:z.read(n) for n in z.namelist()}
+          base='Kayaswanna_Portfolio_GitHubLite/'
+          old=files[base+'index.html'].decode()
+          page=Path('.portfolio-copy/index.html').read_text()
+          pattern=r'<video\b[^>]*src="([^"]+)"'
+          assert re.findall(pattern,old)==re.findall(pattern,page)
+          assert len(re.findall(pattern,page))==33
+          assert 'Every video shown is AI-generated' in page
+          assert 'UGC Portfolio' not in page
+          assert 'https://OfficialMonaeRose.com' not in page
+          files[base+'index.html']=page.encode()
+          with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED) as z:
+              for n,b in files.items():z.writestr(n,b)
+          Path('README.md').write_text('# Monae UGC Portfolio\n\n33 AI-generated portfolio videos organized by category. Clear creator disclosure, completed descriptions, accurate labels, and email contact.\n')
+          PY
+          rm -rf .portfolio-copy
+          rm .github/workflows/portfolio-copy-fixes.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Clarify AI-generated portfolio and complete hiring readiness copy'
+          git push
