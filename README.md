@@ -1,3 +1,3 @@
 # Monae UGC Portfolio
 
-33 unique videos organized into Fashion, Beauty, Fragrance & Accessories, Food & Drinks, Home & Lifestyle, Pets, and Tech + AI. Duplicate coffee export removed; RYZE appears once.
+32 videos organized by category. Duplicate coffee and male watch listings removed. Boss Energy watch kept once in Fragrance & Accessories.
