@@ -1,0 +1,44 @@
+name: Publish verified UGC portfolio update
+on:
+  push:
+    paths:
+      - '.github/workflows/publish-ugc-update.yml'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble and validate portfolio
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, zipfile, re
+          target=Path('Kayaswanna_Portfolio_GitHubLite.zip')
+          with zipfile.ZipFile(target) as z:
+              original={n:z.read(n) for n in z.namelist() if n.endswith('.mp4')}
+          data=b''.join(p.read_bytes() for p in sorted(Path('.portfolio-update').glob('*.part')))
+          assert hashlib.sha256(data).hexdigest()=='651ef4d0eb61f9987717ea58b922ff101bbbfa207c33ec5e01b8555082bc8197'
+          target.write_bytes(data)
+          with zipfile.ZipFile(target) as z:
+              assert z.testzip() is None
+              for name, content in original.items():
+                  assert z.read(name)==content, name
+              page=z.read('Kayaswanna_Portfolio_GitHubLite/index.html').decode()
+              sources=re.findall(r'<video\b[^>]*src="([^"]+)"',page)
+              assert len(sources)==len(set(sources))==32
+              assert len({hashlib.sha256(z.read('Kayaswanna_Portfolio_GitHubLite/'+s)).hexdigest() for s in sources})==32
+          Path('README.md').write_text('# Monae UGC Portfolio\n\nUpdated October 4, 2026: 32 unique videos. All 22 existing videos preserved, with 10 unique additions. Crown Mane appears once.\n')
+          PY
+      - name: Commit portfolio and remove completed transfer
+        shell: bash
+        run: |
+          rm -rf .portfolio-update
+          rm .github/workflows/publish-ugc-update.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Publish 32 unique UGC videos, preserving all existing clips'
+          git push
