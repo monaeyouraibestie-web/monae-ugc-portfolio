@@ -1,3 +1,3 @@
 # Monae UGC Portfolio
 
-Updated October 5, 2026: 34 unique videos. All existing videos preserved; STRUT NOIR Shoe Cam added once.
+33 unique videos organized into Fashion, Beauty, Fragrance & Accessories, Food & Drinks, Home & Lifestyle, Pets, and Tech + AI. Duplicate coffee export removed; RYZE appears once.
