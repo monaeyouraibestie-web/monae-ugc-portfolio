@@ -1,3 +1,3 @@
 # Monae UGC Portfolio
 
-32 videos organized by category. Duplicate coffee and male watch listings removed. Boss Energy watch kept once in Fragrance & Accessories.
+33 videos organized by category. Loaded Tea Product Demo added once in Food & Drinks; all existing videos preserved.
