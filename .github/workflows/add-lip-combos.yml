@@ -1,0 +1,47 @@
+name: Add affordable lip combos portfolio clip
+on:
+  push:
+    paths:
+      - '.github/workflows/add-lip-combos.yml'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,zipfile,re
+          target=Path('Kayaswanna_Portfolio_GitHubLite.zip')
+          data=b''.join(p.read_bytes() for p in sorted(Path('.portfolio-add').glob('*.part')))
+          assert hashlib.sha256(data).hexdigest()=='44b9e9be17aabcaf87643b6753c13b2d3c19caaf7055d0c9456740df4ddf6a96'
+          with zipfile.ZipFile(target) as z:
+              files={n:z.read(n) for n in z.namelist()}
+          original={n:b for n,b in files.items() if n.endswith('.mp4')}
+          assert len(original)==32
+          assert hashlib.sha256(data).digest() not in {hashlib.sha256(b).digest() for b in original.values()}
+          base='Kayaswanna_Portfolio_GitHubLite/'
+          files[base+'assets/Affordable_Lip_Combos_UGC.mp4']=data
+          files[base+'posters/Affordable_Lip_Combos_UGC.jpg']=Path('.portfolio-add/poster.jpg').read_bytes()
+          text=files[base+'index.html'].decode()
+          start=text.index('id="latest"')
+          end=text.index('</div></div></section>',start)
+          text=text[:end]+"<article class=\"card\"><div class=\"frame\" data-video=\"\" style=\"background:#000 url('posters/Affordable_Lip_Combos_UGC.jpg') center/contain no-repeat;\"><video playsinline=\"\" preload=\"none\" poster=\"posters/Affordable_Lip_Combos_UGC.jpg\" src=\"assets/Affordable_Lip_Combos_UGC.mp4\"></video><div class=\"play-overlay\"><div class=\"play-btn\"><svg viewBox=\"0 0 24 24\"><path d=\"M8 5v14l11-7z\"></path></svg></div></div></div><div class=\"card-body\"><p class=\"type\">Beauty UGC</p><h3>Affordable Lip Combos</h3><p>Close-up lip-product demo with a glossy finish.</p></div></article>"+text[end:]
+          sources=re.findall(r'<video\b[^>]*src="([^"]+)"',text)
+          assert len(sources)==len(set(sources))==33
+          files[base+'index.html']=text.encode()
+          for n,b in original.items():assert files[n]==b
+          with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED) as z:
+              for n,b in files.items():z.writestr(n,b)
+          Path('README.md').write_text('# Monae UGC Portfolio\n\nUpdated October 4, 2026: 33 unique videos. All existing videos preserved, with Affordable Lip Combos added once.\n')
+          PY
+          rm -rf .portfolio-add
+          rm .github/workflows/add-lip-combos.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Add Affordable Lip Combos video, preserving all 32 existing clips'
+          git push
