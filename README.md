@@ -1,5 +1,3 @@
 # Monae UGC Portfolio
 
-Public portfolio site for Monae Rose / Your AI Bestie.
-
-Portfolio package updated September 24, 2026.
+Updated October 4, 2026: 32 unique videos. All 22 existing videos preserved, with 10 unique additions. Crown Mane appears once.
