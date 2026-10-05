@@ -1,3 +1,3 @@
 # Monae UGC Portfolio
 
-Updated October 4, 2026: 33 unique videos. All existing videos preserved, with Affordable Lip Combos added once.
+Updated October 5, 2026: 34 unique videos. All existing videos preserved; STRUT NOIR Shoe Cam added once.
